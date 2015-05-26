@@ -8,8 +8,16 @@ Taxis are a fast and reliable mean of transportation. However, they rarely run a
 
 ## Greedy
 
-A greedy algorithm is a method that constructs solutions by making locally optimal decisions in each step. In order to compare the results achieved by the NSGA-II, two greedy algorithms were developed for each of the objective functions: cost and delay. Similar strategies can be expected from a group of human users trying to solve the problem.
+A greedy algorithm is a method that constructs solutions by making locally optimal decisions in each step. Two greedy algorithms were developed for each of the objective functions: cost and delay. Similar strategies can be expected from a group of human users trying to solve the problem.
 
 The greedy method that minimizes cost sequentially adds the passenger whose destination is closer to the origin in a taxi, until that taxi is full. In the case where the cost of adding one passenger to the current taxi is greater than the one obtained by assigning a new taxi to serve that passenger request, the current taxi is closed, and a new one is formed. The algorithm ends when every passenger is assigned to a taxi.
 
 The greedy strategy for optimizing the delay takes the most hurried passengers (those with smaller tolerance for delay) and assigns each of them to a new taxi. It then takes the rest of the passengers in order of hurriedness and assigns them to the last location of the taxi that minimizes their delay. When a taxi has as many passengers as the maximum capacity at the moment, it is consider as closed. If one taxi has more passengers assigned than the maximum capacity available it is deleted, and the passengers of that taxi are assigned to two new taxis.
+
+### Brances and Structure of this project
+
+*   multi-objective__cost => Greedy for the multi-objective problem, optimizing the cost.
+*   single-objective__cost => Greedy for the single-objective problem, optimizing the cost.
+
+*   multi-objective__delay => Greedy for the multi-objective problem, optimizing the delay.
+*   single-objective__delay => Greedy for the single-objective problem, optimizing the delay.
