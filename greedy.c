@@ -23,6 +23,7 @@ double ** lectura_tiempos(FILE * file, int cant_pasajeros);
 
 int capacidad_maxima(int * taxis);
 int sacar_a_capacidad_maxima(int * taxis);
+int lectura_previa(FILE * file, int cant_places, bool displayState);
 
 int main(int argc, char* argv[])
 {
@@ -44,25 +45,10 @@ int main(int argc, char* argv[])
 	cout << "Cantidad de Pasajeros> " << cant_pasajeros << endl;
 
 	double bandera = lectura_bandera(file);
-	// lectura_precio_greedy(file);
-	// lectura_solucion_greedy(file, cant_pasajeros);
-	lectura_hasta_fin_de_linea(file);
-	lectura_hasta_fin_de_linea(file);
-	lectura_hasta_fin_de_linea(file);
-	lectura_hasta_fin_de_linea(file);
-	int * apurados = lectura_apurados(file, cant_pasajeros);
-	cout << "Vector de Apurados> ";
-	for (int i = 0; i < cant_pasajeros; i++) {
-		cout << apurados[i] << " ";
-	}
-	cout << endl;
+	cout << "Bandera> " << bandera << endl;
 
-	int * taxis_disponibles = lectura_taxis_disponibles(file);
-	cout << "Taxis Disponibles> ";
-	for (int i = 0; i < 10; i++) {
-		cout << taxis_disponibles[i] << " ";
-	}
-	cout << endl;
+	// Ignoro las siguientes 6 lineas
+	lectura_previa(file, cant_pasajeros * 2 - 1, true);
 
 	double ** costos = lectura_costos(file, cant_pasajeros);
 	cout << "Matriz de costos> " << endl;
@@ -88,52 +74,32 @@ int main(int argc, char* argv[])
 	}
 
 	// Buscamos la capacidad del mayor taxi
-	int maxPorTaxiActual = 10;
+	int maxPorTaxi = 4;
 	int cantAsignados = 0;
 	int cantTaxi = 0;
 	int indice = 0;
 	
 	while (cantAsignados < cant_pasajeros){
-		cout << "DEBUG> " << "indice " << indice << endl;
-		
-		// Acabamos de llenar un taxi
-		if (cantTaxi >= maxPorTaxiActual) {
-			if(debug) {
-				cout << "DEBUG> " << "taxi lleno, reiniciando todo" << endl;
-			}
 
+		// Acabamos de llenar un taxi
+		if (cantTaxi >= maxPorTaxi) {
 			solucion[indice] = 0;
 			indice++;
 			cantTaxi = 0;
 		}
-		
+
 		// Si arrancamos un nuevo taxi
 		else if (cantTaxi == 0) {
-
-			maxPorTaxiActual = sacar_a_capacidad_maxima(taxis_disponibles);
-			
-			if(debug) {
-				cout << "DEBUG> " << "empezando un nuevo taxi" << endl;
-				cout << "DEBUG> " << "la capacidad sera de " << maxPorTaxiActual << endl;
-				cout << "DEBUG> " << "buscando el mas cercano al origen" << endl;
-			}
-
-			// Nearest to the origin
+			// Mas cercano al origen
 			int pas = 1;
 			while(asignados[pas - 1])
 				pas++;
+			
 			for (int i=1; i<cant_pasajeros + 1; i++) {
-				if(debug && !asignados[i-1]) {
-					cout << "DEBUG> " << "el costo desde el origen al punto no asignado " << i << " es de " << costos[0][i] << endl;
-				}
 				if ((costos[0][i] < costos[0][pas]) && (!asignados[i-1]))
 					pas = i;
 			}
 
-			if(debug) {
-				cout << "DEBUG> " << "nos quedamos con " << pas << endl;
-			}
-			
 			solucion[indice] = pas;
 			asignados[pas-1] = true;
 			indice++;
@@ -143,47 +109,23 @@ int main(int argc, char* argv[])
 
 		// Estamos llenando un taxi
 		else {
-	
-			if(debug) {
-				cout << "DEBUG> " << "llenando el taxi" << endl;
-				cout << "DEBUG> " << "buscando el mas cercano al punto anterior " << solucion[indice - 1] << endl;
-			}
-
-			// Nearest of the previous marker
+			// Mas cercano al pasajero anterior
 			int pas2 = 1;
 			while(asignados[pas2 - 1])
 				pas2++;
 
 			for (int i = 1; i < cant_pasajeros + 1; i++) {
-				if(debug && !asignados[i-1]) {
-					cout << "DEBUG> " << "el costo desde el punto anterior al punto no asignado " << i << " es de " << costos[0][i] << endl;
-				}
 				if ((!(asignados[i - 1])) && ((costos[(solucion[indice - 1])][i]) < (costos[(solucion[indice - 1])][pas2])))
 					pas2 = i;
 			}
 
-			if(debug) {
-				cout << "DEBUG> " << "nos quedamos con " << pas2 << endl;
-			}
-
-
 			if(costos[(solucion[indice - 1])][pas2] > costos[0][pas2]) {
-				if(debug) {
-					cout << "DEBUG> " << "cierro taxi ya que es mas cercano desde el origen" << endl;
-					cout << "DEBUG> " << "costo desde el destino anterior " << costos[(solucion[indice - 1])][pas2] << endl;
-					cout << "DEBUG> " << "costo desde el origen " << costos[0][pas2] << endl;
-				}
 				// En este caso es mas barato salir desde el origen
 				solucion[indice] = 0;
 				indice++;
 				cantTaxi = 0;
 
 			} else {
-				if(debug) {
-					cout << "DEBUG> " << "no creamos taxi nuevo ya que es mas cercano desde el taxi actual" << endl;
-					cout << "DEBUG> " << "costo desde el destino anterior " << costos[(solucion[indice - 1])][pas2] << endl;
-					cout << "DEBUG> " << "costo desde el origen " << costos[0][pas2] << endl;
-				}
 				solucion[indice] = pas2;
 				cantTaxi++;
 				indice++;
@@ -193,7 +135,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	cout << "DEBUG> " << endl;
 	for(int i = 0; i < 2*cant_pasajeros - 1; i++) {
 		cout << solucion[i] << " ";
 	}    
@@ -333,7 +274,7 @@ double ** lectura_tiempos(FILE * file, int cant_pasajeros) {
 
 void lectura_hasta_fin_de_linea(FILE * file) {
 	char * texto;
-	fscanf(file, "%s", texto);
+	fscanf(file, "%[^\n]", texto);
 	cout << "Texto ignorado> " << texto << endl;
 };
 
@@ -367,4 +308,91 @@ int sacar_a_capacidad_maxima(int * taxis) {
 	return maximo;
 }
 
-^[0-9]*\.[0-9]*\s[0-9]*\.[0-9]*\s[0-9]*\.[0-9]*\s[0-9]*\.[0-9]*\s[0-9]*\.[0-9]*\s[0-9]*\.[0-9]*\s[0-9]*\.[0-9]*\s[0-9]*\.[0-9]*\s[0-9]*\.[0-9]*\s[0-9]*\.[0-9]*\s
+int lectura_previa(FILE * file, int cant_places, bool displayState) {
+	
+	// Fitness Greedy Costo
+	double fit_greedy_costo;
+	fscanf(file, "%lf", &fit_greedy_costo);
+    if(displayState) {
+      cout << "Fitness Greedy Costo (Costo)> " << fit_greedy_costo << endl;
+    }
+    double fit_greedy_costo_tiempo;
+	fscanf(file, "%lf", &fit_greedy_costo_tiempo);
+    if(displayState) {
+      cout << "Fitness Greedy Costo (Tiempo)> " << fit_greedy_costo_tiempo << endl;
+    }
+
+	// Solucion Greedy Costo
+	int item_greedy_costo;
+    if(displayState) {
+      cout << "Solucion Greedy Costo> ";
+    }
+	for(int i = 0; i < cant_places; i++) {
+		fscanf(file, "%d", &item_greedy_costo);
+        if(displayState) {
+          cout << item_greedy_costo << " ";
+        }
+	}
+    if(displayState) {
+      cout << endl;
+    }
+
+	// Fitness Greedy Demora
+    double fit_greedy_demora_costo;
+	fscanf(file, "%lf", &fit_greedy_demora_costo);
+    if(displayState) {
+      cout << "Fitness Greedy Demora (Costo)> " << fit_greedy_demora_costo << endl;
+    }
+	double fit_greedy_demora;
+	fscanf(file, "%lf", &fit_greedy_demora);
+    if(displayState) {
+      cout << "Fitness Greedy Demora (Tiempo)> " << fit_greedy_demora << endl;
+    }
+
+	// Solucion Greedy Demora
+	int item_greedy_demora;
+    if(displayState) {
+      cout << "Solucion Greedy Costo> ";
+    }
+	for(int i = 0; i < cant_places; i++) {
+		fscanf(file, "%d", &item_greedy_demora);
+        if(displayState) {
+          cout << item_greedy_demora << " ";
+        }
+	}
+    if(displayState) {
+      cout << endl;
+    }
+
+	// Leo vector de demoras
+	int item_demora;
+    if(displayState) {
+      cout << "Vector Demoras> ";
+    }
+	for(int i = 0; i < 10; i++) {
+		fscanf(file, "%d", &item_demora);
+        if(displayState) { 
+          cout << item_demora << " ";
+        }
+	}
+	if(displayState) {
+      cout << endl;
+    }
+
+	// Leo vector de apurados
+	int item_apurado;
+    if(displayState) {
+      cout << "Vector Apurados> ";
+    }
+	for(int i = 0; i < 10; i++) {
+		fscanf(file, "%d", &item_apurado);
+        if(displayState) {
+          cout << item_apurado << " ";
+        }
+	}
+	if(displayState) {
+      cout << endl;
+    }
+
+    return 0;
+}
