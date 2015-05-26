@@ -20,4 +20,3 @@ The greedy strategy for optimizing the delay takes the most hurried passengers (
 *   single-objective__cost => Greedy for the single-objective problem, optimizing the cost.
 
 *   multi-objective__delay => Greedy for the multi-objective problem, optimizing the delay.
-*   single-objective__delay => Greedy for the single-objective problem, optimizing the delay.
