@@ -153,9 +153,11 @@ int main(int argc, char* argv[])
 		}
 		else if ((solucion[pos] != 0) && nuevotaxi){
 			nuevotaxi = false;
+          cout << "Sumando de 0 a " << solucion[pos] << ": " << costos[0][solucion[pos]] << endl;
 			costotaxi = costotaxi + bandera + (costos[0][solucion[pos]]);
 		}
 		else {
+          cout << "Sumando de " << solucion[pos-1] << " a " << solucion[pos] << ": " << costos[solucion[pos - 1]][solucion[pos]] << endl;
 			costotaxi=costotaxi + (costos[solucion[pos - 1]][solucion[pos]]);
 		}
 		pos++;
@@ -309,90 +311,12 @@ int sacar_a_capacidad_maxima(int * taxis) {
 }
 
 int lectura_previa(FILE * file, int cant_places, bool displayState) {
-	
-	// Fitness Greedy Costo
 	double fit_greedy_costo;
 	fscanf(file, "%lf", &fit_greedy_costo);
-    if(displayState) {
-      cout << "Fitness Greedy Costo (Costo)> " << fit_greedy_costo << endl;
-    }
-    double fit_greedy_costo_tiempo;
-	fscanf(file, "%lf", &fit_greedy_costo_tiempo);
-    if(displayState) {
-      cout << "Fitness Greedy Costo (Tiempo)> " << fit_greedy_costo_tiempo << endl;
-    }
-
-	// Solucion Greedy Costo
+    
 	int item_greedy_costo;
-    if(displayState) {
-      cout << "Solucion Greedy Costo> ";
-    }
-	for(int i = 0; i < cant_places; i++) {
+    for(int i = 0; i < cant_places; i++) {
 		fscanf(file, "%d", &item_greedy_costo);
-        if(displayState) {
-          cout << item_greedy_costo << " ";
-        }
 	}
-    if(displayState) {
-      cout << endl;
-    }
-
-	// Fitness Greedy Demora
-    double fit_greedy_demora_costo;
-	fscanf(file, "%lf", &fit_greedy_demora_costo);
-    if(displayState) {
-      cout << "Fitness Greedy Demora (Costo)> " << fit_greedy_demora_costo << endl;
-    }
-	double fit_greedy_demora;
-	fscanf(file, "%lf", &fit_greedy_demora);
-    if(displayState) {
-      cout << "Fitness Greedy Demora (Tiempo)> " << fit_greedy_demora << endl;
-    }
-
-	// Solucion Greedy Demora
-	int item_greedy_demora;
-    if(displayState) {
-      cout << "Solucion Greedy Costo> ";
-    }
-	for(int i = 0; i < cant_places; i++) {
-		fscanf(file, "%d", &item_greedy_demora);
-        if(displayState) {
-          cout << item_greedy_demora << " ";
-        }
-	}
-    if(displayState) {
-      cout << endl;
-    }
-
-	// Leo vector de demoras
-	int item_demora;
-    if(displayState) {
-      cout << "Vector Demoras> ";
-    }
-	for(int i = 0; i < 10; i++) {
-		fscanf(file, "%d", &item_demora);
-        if(displayState) { 
-          cout << item_demora << " ";
-        }
-	}
-	if(displayState) {
-      cout << endl;
-    }
-
-	// Leo vector de apurados
-	int item_apurado;
-    if(displayState) {
-      cout << "Vector Apurados> ";
-    }
-	for(int i = 0; i < 10; i++) {
-		fscanf(file, "%d", &item_apurado);
-        if(displayState) {
-          cout << item_apurado << " ";
-        }
-	}
-	if(displayState) {
-      cout << endl;
-    }
-
     return 0;
 }
